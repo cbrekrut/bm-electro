@@ -6,7 +6,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<BirthdaySlideshow  />} />
+        <Route path="/bm-electro" element={<BirthdaySlideshow  />} />
       </Routes>
     </Router>
   );
