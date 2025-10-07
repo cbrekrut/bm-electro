@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 
 // Время показа одного слайда
-const DURATION_MS = 5000;
+const DURATION_MS = 10;
 
 const SLIDES = [
   { id: 1,  title: "С Днём Рождения!",  subtitle: "Пусть сбывается всё, что задумано", icon: <PartyPopper className="w-8 h-8"/>, bg: "from-fuchsia-500 via-violet-500 to-indigo-500" },
@@ -117,48 +117,30 @@ const Slide = ({ slide, index, direction }) => (
 
 export default function BirthdaySlideshow() {
   const [index, setIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false); // стартуем остановленными
   const [direction, setDirection] = useState("next");
+  const [hasStarted, setHasStarted] = useState(false); // экран старта
 
   // --- AUDIO ---
   const audioRef = useRef(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [askedToEnable, setAskedToEnable] = useState(false); // для подсказки
 
-  // автоплей музыки в muted + подготовка к разблокировке звука по жесту
+  // используем BASE_URL, чтобы путь работал и локально, и на GH Pages
+  const audioSrc = import.meta.env.BASE_URL + "birthday.mp3";
+
+  // подготовка аудио (автоплей в mute допустим) — не запускаем звук до старта
   useEffect(() => {
     const el = audioRef.current;
     if (!el) return;
-
-    el.volume = 0.9;
+    el.src = audioSrc;
+    el.volume = 0; // начнём с 0, чтобы сделать fade-in
     el.muted = true;
     el.loop = true;
     el.playsInline = true;
+    el.load();
+  }, [audioSrc]);
 
-    const tryPlay = async () => {
-      try { await el.play(); } catch {
-        // если не смог — подскажем включить звук вручную
-        setAskedToEnable(true);
-      }
-    };
-    tryPlay();
-
-    const unlock = async () => {
-      try { await el.play(); } catch {}
-      // показываем подсказку один раз, пока юзер не нажмёт
-      setAskedToEnable(true);
-      // слушатели "одноразовые" — дальше управляем кнопкой
-    };
-    window.addEventListener("touchstart", unlock, { once: true });
-    window.addEventListener("click", unlock, { once: true });
-    window.addEventListener("keydown", unlock, { once: true });
-
-    return () => {
-      // ничего удалять не нужно — once:true сам снимет слушатели
-    };
-  }, []);
-
-  // плавное появление громкости при включении
+  // плавное появление громкости
   const fadeTo = (target = 0.9, ms = 500) => {
     const el = audioRef.current;
     if (!el) return;
@@ -174,6 +156,19 @@ export default function BirthdaySlideshow() {
     }, stepTime);
   };
 
+  const startShow = async () => {
+    // запускаем слайды и звук
+    setHasStarted(true);
+    setIsPlaying(true);
+    const el = audioRef.current;
+    if (el) {
+      el.muted = false; // снимаем mute по явному действию
+      try { await el.play(); } catch {}
+      fadeTo(0.9, 600);
+      setIsMuted(false);
+    }
+  };
+
   const toggleMute = async () => {
     const el = audioRef.current;
     if (!el) return;
@@ -182,7 +177,6 @@ export default function BirthdaySlideshow() {
       try { await el.play(); } catch {}
       fadeTo(0.9, 400);
       setIsMuted(false);
-      setAskedToEnable(false);
     } else {
       fadeTo(0, 300);
       setTimeout(() => {
@@ -192,9 +186,9 @@ export default function BirthdaySlideshow() {
     }
   };
 
-  // --- AUTOPLAY SLIDES ---
+  // --- AUTOPLAY SLIDES --- (работает только после старта)
   const { elapsed } = useAutoplay({
-    isPlaying,
+    isPlaying: isPlaying && hasStarted,
     onTick: () => {
       setDirection("next");
       setIndex((i) => (i + 1) % SLIDES.length);
@@ -216,13 +210,17 @@ export default function BirthdaySlideshow() {
   // клавиши
   useEffect(() => {
     const onKey = (e) => {
+      if (!hasStarted && (e.key === "Enter" || e.key === " ")) {
+        startShow();
+        return;
+      }
       if (e.key === "ArrowRight") goNext();
       if (e.key === "ArrowLeft") goPrev();
       if (e.key === " ") setIsPlaying((p) => !p);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, []);
+  }, [hasStarted]);
 
   // свайпы
   const touchRef = useRef({ x: 0, y: 0 });
@@ -240,8 +238,8 @@ export default function BirthdaySlideshow() {
 
   return (
     <div className="min-h-screen w-full bg-neutral-950 text-white flex items-center justify-center p-4 select-none">
-      {/* Фоновое аудио (файл положи в public/birthday.mp3) */}
-      <audio ref={audioRef} src="/birthday.mp3" preload="auto" />
+      {/* Фоновое аудио */}
+      <audio ref={audioRef} preload="auto" />
 
       <div
         className="relative w-full max-w-6xl aspect-[16/9] rounded-3xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
@@ -271,7 +269,7 @@ export default function BirthdaySlideshow() {
         {/* Панель управления */}
         <div className="absolute bottom-4 left-0 right-0 z-20 flex items-center justify-between px-4">
           <div className="hidden sm:block text-white/80 text-sm">
-            ← → — переключение, Space — пауза
+            Enter — старт · ← → — переключение · Space — пауза
           </div>
           <div className="ml-auto flex items-center gap-2">
             {/* Mute / Unmute */}
@@ -291,11 +289,19 @@ export default function BirthdaySlideshow() {
           </div>
         </div>
 
-        {/* Подсказка включить звук */}
-        {isMuted && askedToEnable && (
-          <div className="absolute inset-x-0 bottom-20 z-20 flex justify-center">
-            <div className="px-4 py-2 rounded-full bg-black/40 border border-white/15 text-sm">
-              Нажми «Включить звук», чтобы услышать музыку 🎵
+        {/* Экран старта на полный экран поверх */}
+        {!hasStarted && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60 backdrop-blur-sm" />
+            <div className="relative z-10 text-center px-6">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">Готовы начать праздник?</h2>
+              <p className="text-white/80 mb-8">Нажмите "Старт" — запустится слайд-шоу и музыка</p>
+              <button
+                onClick={startShow}
+                className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-white text-neutral-900 font-semibold text-lg shadow-lg hover:shadow-xl active:scale-[0.99] transition"
+              >
+                <Music className="w-6 h-6" /> Старт
+              </button>
             </div>
           </div>
         )}
