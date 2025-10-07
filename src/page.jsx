@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Pause, Play, PartyPopper, Gift, Sparkles, Crown, Star, Music } from "lucide-react";
 
 // Стильное слайд‑шоу с авто‑перелистыванием, прогресс‑баром, кнопками и клавишами/свайпами
-const DURATION_MS = 5000; // время показа одного слайда
+const DURATION_MS = 100; // время показа одного слайда
 
 const SLIDES = [
   { id: 1,  title: "С Днём Рождения!",         subtitle: "Пусть сбывается всё, что задумано",         icon: <PartyPopper className="w-8 h-8"/>, bg: "from-fuchsia-500 via-violet-500 to-indigo-500" },
