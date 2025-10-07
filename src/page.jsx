@@ -1,19 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Pause, Play, PartyPopper, Gift, Sparkles, Crown, Star, Music } from "lucide-react";
+import {
+  ArrowLeft, ArrowRight, Pause, Play,
+  PartyPopper, Gift, Sparkles, Crown, Star, Music,
+  Volume2, VolumeX
+} from "lucide-react";
 
-// Стильное слайд‑шоу с авто‑перелистыванием, прогресс‑баром, кнопками и клавишами/свайпами
-const DURATION_MS = 100; // время показа одного слайда
+// Время показа одного слайда
+const DURATION_MS = 5000;
 
 const SLIDES = [
-  { id: 1,  title: "С Днём Рождения!",         subtitle: "Пусть сбывается всё, что задумано",         icon: <PartyPopper className="w-8 h-8"/>, bg: "from-fuchsia-500 via-violet-500 to-indigo-500" },
-  { id: 2,  title: "Радости каждый день",       subtitle: "Пусть жизнь искрится улыбками",             icon: <Sparkles className="w-8 h-8"/>,   bg: "from-teal-500 via-cyan-500 to-blue-500" },
-  { id: 3,  title: "Исполнения мечт",           subtitle: "Мечты → планы → победы",                    icon: <Crown className="w-8 h-8"/>,       bg: "from-rose-500 via-orange-500 to-amber-500" },
-  { id: 4,  title: "Крепкого здоровья",          subtitle: "Энергии на великие дела",                  icon: <Star className="w-8 h-8"/>,        bg: "from-emerald-500 via-lime-500 to-yellow-500" },
-  { id: 5,  title: "Тепла от близких",           subtitle: "Любви, поддержки и уютных встреч",         icon: <Gift className="w-8 h-8"/>,        bg: "from-sky-500 via-indigo-500 to-purple-500" },
-  { id: 6,  title: "Ярких впечатлений",          subtitle: "Больше путешествий и открытий",            icon: <Sparkles className="w-8 h-8"/>,   bg: "from-pink-500 via-red-500 to-orange-500" },
-  { id: 7,  title: "Музыки в душе",              subtitle: "Пусть каждый день звучит гармонично",      icon: <Music className="w-8 h-8"/>,       bg: "from-blue-500 via-indigo-600 to-slate-800" },
-  { id: 8,  title: "Больших достижений",         subtitle: "Ты можешь больше, чем думаешь",            icon: <Star className="w-8 h-8"/>,        bg: "from-amber-500 via-yellow-500 to-emerald-500" },
+  { id: 1,  title: "С Днём Рождения!",  subtitle: "Пусть сбывается всё, что задумано", icon: <PartyPopper className="w-8 h-8"/>, bg: "from-fuchsia-500 via-violet-500 to-indigo-500" },
+  { id: 2,  title: "Радости каждый день", subtitle: "Пусть жизнь искрится улыбками",    icon: <Sparkles className="w-8 h-8"/>,   bg: "from-teal-500 via-cyan-500 to-blue-500" },
+  { id: 3,  title: "Исполнения мечт",     subtitle: "Мечты → планы → победы",            icon: <Crown className="w-8 h-8"/>,      bg: "from-rose-500 via-orange-500 to-amber-500" },
+  { id: 4,  title: "Крепкого здоровья",   subtitle: "Энергии на великие дела",           icon: <Star className="w-8 h-8"/>,       bg: "from-emerald-500 via-lime-500 to-yellow-500" },
+  { id: 5,  title: "Тепла от близких",    subtitle: "Любви, поддержки и уютных встреч",  icon: <Gift className="w-8 h-8"/>,       bg: "from-sky-500 via-indigo-500 to-purple-500" },
+  { id: 6,  title: "Ярких впечатлений",   subtitle: "Больше путешествий и открытий",     icon: <Sparkles className="w-8 h-8"/>,   bg: "from-pink-500 via-red-500 to-orange-500" },
+  { id: 7,  title: "Музыки в душе",       subtitle: "Пусть каждый день звучит гармонично", icon: <Music className="w-8 h-8"/>,    bg: "from-blue-500 via-indigo-600 to-slate-800" },
+  { id: 8,  title: "Больших достижений",  subtitle: "Ты можешь больше, чем думаешь",     icon: <Star className="w-8 h-8"/>,       bg: "from-amber-500 via-yellow-500 to-emerald-500" },
 ];
 
 function useAutoplay({ isPlaying, onTick, duration = DURATION_MS }) {
@@ -70,54 +74,125 @@ const ControlButton = ({ icon, label, onClick }) => (
   </button>
 );
 
-const Slide = ({ slide, index, direction }) => {
-  return (
-    <motion.div
-      key={slide.id}
-      className="absolute inset-0 flex items-center justify-center"
-      initial={{ opacity: 0, x: direction === "next" ? 64 : -64, scale: 0.98 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      exit={{ opacity: 0, x: direction === "next" ? -64 : 64, scale: 0.98 }}
-      transition={{ type: "spring", stiffness: 120, damping: 18 }}
-    >
-      <div className="relative w-full h-full overflow-hidden rounded-3xl">
-        {/* Градиентный фон */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${slide.bg}`} />
+const Slide = ({ slide, index, direction }) => (
+  <motion.div
+    key={slide.id}
+    className="absolute inset-0 flex items-center justify-center"
+    initial={{ opacity: 0, x: direction === "next" ? 64 : -64, scale: 0.98 }}
+    animate={{ opacity: 1, x: 0, scale: 1 }}
+    exit={{ opacity: 0, x: direction === "next" ? -64 : 64, scale: 0.98 }}
+    transition={{ type: "spring", stiffness: 120, damping: 18 }}
+  >
+    <div className="relative w-full h-full overflow-hidden rounded-3xl">
+      {/* Градиентный фон */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${slide.bg}`} />
 
-        {/* Декоративные пятна */}
-        <div className="absolute -top-24 -left-24 w-72 h-72 bg-white/10 blur-3xl rounded-full" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 blur-3xl rounded-full" />
+      {/* Декоративные пятна */}
+      <div className="absolute -top-24 -left-24 w-72 h-72 bg-white/10 blur-3xl rounded-full" />
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-black/10 blur-3xl rounded-full" />
 
-        {/* Контент */}
-        <div className="relative z-10 h-full flex items-center justify-center p-6">
-          <div className="w-full max-w-3xl mx-auto text-center text-white">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 ring-1 ring-white/15 backdrop-blur-md mb-4">
-              {slide.icon}
-              <span className="text-sm tracking-wide">Happy Birthday</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
-              {slide.title}
-            </h1>
-            <p className="mt-4 text-base sm:text-lg md:text-xl text-white/90">
-              {slide.subtitle}
-            </p>
+      {/* Контент */}
+      <div className="relative z-10 h-full flex items-center justify-center p-6">
+        <div className="w-full max-w-3xl mx-auto text-center text-white">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/20 ring-1 ring-white/15 backdrop-blur-md mb-4">
+            {slide.icon}
+            <span className="text-sm tracking-wide">Happy Birthday</span>
           </div>
-        </div>
-
-        {/* Номер слайда */}
-        <div className="absolute bottom-6 right-6 text-white/80 text-sm select-none">
-          {index + 1} / {SLIDES.length}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.25)]">
+            {slide.title}
+          </h1>
+          <p className="mt-4 text-base sm:text-lg md:text-xl text-white/90">
+            {slide.subtitle}
+          </p>
         </div>
       </div>
-    </motion.div>
-  );
-};
+
+      {/* Номер слайда */}
+      <div className="absolute bottom-6 right-6 text-white/80 text-sm select-none">
+        {index + 1} / {SLIDES.length}
+      </div>
+    </div>
+  </motion.div>
+);
 
 export default function BirthdaySlideshow() {
   const [index, setIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const [direction, setDirection] = useState("next");
 
+  // --- AUDIO ---
+  const audioRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [askedToEnable, setAskedToEnable] = useState(false); // для подсказки
+
+  // автоплей музыки в muted + подготовка к разблокировке звука по жесту
+  useEffect(() => {
+    const el = audioRef.current;
+    if (!el) return;
+
+    el.volume = 0.9;
+    el.muted = true;
+    el.loop = true;
+    el.playsInline = true;
+
+    const tryPlay = async () => {
+      try { await el.play(); } catch {
+        // если не смог — подскажем включить звук вручную
+        setAskedToEnable(true);
+      }
+    };
+    tryPlay();
+
+    const unlock = async () => {
+      try { await el.play(); } catch {}
+      // показываем подсказку один раз, пока юзер не нажмёт
+      setAskedToEnable(true);
+      // слушатели "одноразовые" — дальше управляем кнопкой
+    };
+    window.addEventListener("touchstart", unlock, { once: true });
+    window.addEventListener("click", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+
+    return () => {
+      // ничего удалять не нужно — once:true сам снимет слушатели
+    };
+  }, []);
+
+  // плавное появление громкости при включении
+  const fadeTo = (target = 0.9, ms = 500) => {
+    const el = audioRef.current;
+    if (!el) return;
+    const steps = 20;
+    const stepTime = ms / steps;
+    const start = el.volume;
+    const delta = (target - start) / steps;
+    let n = 0;
+    const id = setInterval(() => {
+      n += 1;
+      el.volume = Math.max(0, Math.min(1, start + delta * n));
+      if (n >= steps) clearInterval(id);
+    }, stepTime);
+  };
+
+  const toggleMute = async () => {
+    const el = audioRef.current;
+    if (!el) return;
+    if (isMuted) {
+      el.muted = false;
+      try { await el.play(); } catch {}
+      fadeTo(0.9, 400);
+      setIsMuted(false);
+      setAskedToEnable(false);
+    } else {
+      fadeTo(0, 300);
+      setTimeout(() => {
+        el.muted = true;
+        setIsMuted(true);
+      }, 300);
+    }
+  };
+
+  // --- AUTOPLAY SLIDES ---
   const { elapsed } = useAutoplay({
     isPlaying,
     onTick: () => {
@@ -138,18 +213,18 @@ export default function BirthdaySlideshow() {
     setIndex((i) => (i - 1 + SLIDES.length) % SLIDES.length);
   };
 
-  // Управление клавиатурой
+  // клавиши
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "ArrowRight") goNext();
       if (e.key === "ArrowLeft") goPrev();
-      if (e.key === " ") setIsPlaying((p) => !p); // Space
+      if (e.key === " ") setIsPlaying((p) => !p);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Свайпы на мобильных
+  // свайпы
   const touchRef = useRef({ x: 0, y: 0 });
   const onTouchStart = (e) => {
     const t = e.touches[0];
@@ -165,19 +240,22 @@ export default function BirthdaySlideshow() {
 
   return (
     <div className="min-h-screen w-full bg-neutral-950 text-white flex items-center justify-center p-4 select-none">
+      {/* Фоновое аудио (файл положи в public/birthday.mp3) */}
+      <audio ref={audioRef} src="/birthday.mp3" preload="auto" />
+
       <div
         className="relative w-full max-w-6xl aspect-[16/9] rounded-3xl overflow-hidden shadow-[0_20px_80px_rgba(0,0,0,0.45)] ring-1 ring-white/10"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {/* Слой слайдов */}
+        {/* Слайды */}
         <div className="absolute inset-0">
           <AnimatePresence mode="wait" initial={false}>
             <Slide key={slide.id} slide={slide} index={index} direction={direction} />
           </AnimatePresence>
         </div>
 
-        {/* Верхняя панель: индикаторы / прогресс */}
+        {/* Прогресс сверху */}
         <div className="absolute top-4 left-4 right-4 z-20 flex items-center gap-2">
           {SLIDES.map((s, i) => (
             <div key={s.id} className="flex-1">
@@ -190,12 +268,19 @@ export default function BirthdaySlideshow() {
           ))}
         </div>
 
-        {/* Нижняя панель управления */}
+        {/* Панель управления */}
         <div className="absolute bottom-4 left-0 right-0 z-20 flex items-center justify-between px-4">
           <div className="hidden sm:block text-white/80 text-sm">
             ← → — переключение, Space — пауза
           </div>
           <div className="ml-auto flex items-center gap-2">
+            {/* Mute / Unmute */}
+            <ControlButton
+              icon={isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+              label={isMuted ? "Включить звук" : "Выключить звук"}
+              onClick={toggleMute}
+            />
+            {/* Навигация и play/pause */}
             <ControlButton icon={<ArrowLeft className="w-5 h-5" />} label="Назад" onClick={goPrev} />
             <ControlButton
               icon={isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
@@ -205,6 +290,15 @@ export default function BirthdaySlideshow() {
             <ControlButton icon={<ArrowRight className="w-5 h-5" />} label="Вперёд" onClick={goNext} />
           </div>
         </div>
+
+        {/* Подсказка включить звук */}
+        {isMuted && askedToEnable && (
+          <div className="absolute inset-x-0 bottom-20 z-20 flex justify-center">
+            <div className="px-4 py-2 rounded-full bg-black/40 border border-white/15 text-sm">
+              Нажми «Включить звук», чтобы услышать музыку 🎵
+            </div>
+          </div>
+        )}
 
         {/* Буллеты */}
         <div className="absolute bottom-4 left-4 z-20 hidden sm:flex gap-2">
