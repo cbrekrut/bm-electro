@@ -219,16 +219,23 @@ function TeamCarouselVariant2() {
   );
 }
 
-// Вариант 3 — горизонтальная карусель карточек с эффектом "галереи"
 function TeamCarouselVariant3() {
   const { index, prev, next } = useCarousel(team.length);
 
-  // Показываем 1 активную + две по бокам с уменьшением
-  const getOffsetIndex = (offset) => (index + offset + team.length) % team.length;
+  const getOffsetIndex = (offset: number) =>
+    (index + offset + team.length) % team.length;
 
   const center = team[getOffsetIndex(0)];
   const left = team[getOffsetIndex(-1)];
   const right = team[getOffsetIndex(1)];
+
+  const handleLeftHover = () => {
+    prev();
+  };
+
+  const handleRightHover = () => {
+    next();
+  };
 
   return (
     <section className="mb-24">
@@ -252,14 +259,19 @@ function TeamCarouselVariant3() {
 
       <div className="relative flex items-center justify-center gap-6">
         {/* Левая карточка */}
-        <article className="hidden md:block w-64 opacity-40 scale-90 transform transition-all bg-gray-900/70 rounded-2xl border border-gray-800 overflow-hidden">
+        <article
+          onMouseEnter={handleLeftHover}
+          className="hidden md:block w-64 opacity-40 scale-90 transform transition-all bg-gray-900/70 rounded-2xl border border-gray-800 overflow-hidden cursor-pointer"
+        >
           <img
             src={left.photo}
             alt={left.name}
             className="w-full h-48 object-cover"
           />
           <div className="p-4">
-            <h3 className="text-lg font-semibold text-white truncate">{left.name}</h3>
+            <h3 className="text-lg font-semibold text-white truncate">
+              {left.name}
+            </h3>
             <p className="text-xs text-gray-400 truncate">{left.role}</p>
             <ContactButtons
               email={left.email}
@@ -283,7 +295,9 @@ function TeamCarouselVariant3() {
               </div>
             </div>
             <div className="p-6 flex flex-col justify-center">
-              <h3 className="text-2xl font-semibold text-white mb-1">{center.name}</h3>
+              <h3 className="text-2xl font-semibold text-white mb-1">
+                {center.name}
+              </h3>
               <p className="text-sm text-amber-300 mb-3">{center.role}</p>
               <p className="text-sm text-gray-300 mb-4">{center.description}</p>
               <ContactButtons
@@ -302,14 +316,21 @@ function TeamCarouselVariant3() {
             </div>
           </div>
         </article>
-        <article className="hidden md:block w-64 opacity-40 scale-90 transform transition-all bg-gray-900/70 rounded-2xl border border-gray-800 overflow-hidden">
+
+        {/* Правая карточка */}
+        <article
+          onMouseEnter={handleRightHover}
+          className="hidden md:block w-64 opacity-40 scale-90 transform transition-all bg-gray-900/70 rounded-2xl border border-gray-800 overflow-hidden cursor-pointer"
+        >
           <img
             src={right.photo}
             alt={right.name}
             className="w-full h-48 object-cover"
           />
           <div className="p-4">
-            <h3 className="text-lg font-semibold text-white truncate">{right.name}</h3>
+            <h3 className="text-lg font-semibold text-white truncate">
+              {right.name}
+            </h3>
             <p className="text-xs text-gray-400 truncate">{right.role}</p>
             <ContactButtons
               email={right.email}
@@ -353,36 +374,35 @@ function TeamCarouselVariant4() {
         {visible.map((member) => (
           <article
             key={member.id}
-            className="group relative bg-gray-900/90 rounded-2xl overflow-hidden border border-gray-800 shadow-xl transition-transform duration-300 hover:-translate-y-2 hover:-translate-x-1 h-120"
+            className="group bg-gray-900/90 rounded-2xl overflow-hidden border border-gray-800 shadow-xl transition-transform duration-300 hover:-translate-y-2 hover:-translate-x-1"
           >
             {/* Базовая карточка с фото и ФИО */}
-            <img
-              src={member.photo}
-              alt={member.name}
-              className="w-full h-64 object-cover h-120"
-            />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4">
-              <h3 className="text-xl font-semibold text-white">{member.name}</h3>
-              <p className="text-sm text-gray-300">{member.role}</p>
-              <ContactButtons
-                email={member.email}
-                phone={member.phone}
-                whatsapp={member.whatsapp}
+            <div className="relative">
+              <img
+                src={member.photo}
+                alt={member.name}
+                className="w-full h-64 object-cover"
               />
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4">
+                <h3 className="text-xl font-semibold text-white">{member.name}</h3>
+                <p className="text-sm text-gray-300">{member.role}</p>
+                <ContactButtons
+                  email={member.email}
+                  phone={member.phone}
+                  whatsapp={member.whatsapp}
+                />
+              </div>
             </div>
 
-            {/* Описание, выезжающее при наведении */}
-            <div className="absolute inset-0 bg-black/90 p-6 flex flex-col justify-between translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <div>
-                <h3 className="text-2xl font-semibold text-white mb-2">{member.name}</h3>
-                <p className="text-sm text-amber-300 mb-3">{member.role}</p>
-                <p className="text-sm text-gray-300 mb-4">{member.description}</p>
-              </div>
-              <ContactButtons
-                email={member.email}
-                phone={member.phone}
-                whatsapp={member.whatsapp}
-              />
+            {/* Описание снизу, которое раскрывается при наведении */}
+            <div className="px-4 pb-4 pt-0 max-h-0 opacity-0 group-hover:max-h-40 md:group-hover:max-h-56 group-hover:opacity-100 transition-all duration-300 ease-out overflow-hidden bg-black/80 border-t border-gray-800">
+              <h3 className="text-2xl font-semibold text-white mb-2 mt-3">
+                {member.name}
+              </h3>
+              <p className="text-sm text-amber-300 mb-3">{member.role}</p>
+              <p className="text-sm text-gray-300 mb-1">
+                {member.description}
+              </p>
             </div>
           </article>
         ))}
