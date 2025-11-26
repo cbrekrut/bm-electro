@@ -222,6 +222,7 @@ function TeamCarouselVariant2() {
 function TeamCarouselVariant3() {
   const { index, prev, next } = useCarousel(team.length);
 
+  // Показываем 1 активную + две по бокам с уменьшением
   const getOffsetIndex = (offset: number) =>
     (index + offset + team.length) % team.length;
 
@@ -381,7 +382,7 @@ function TeamCarouselVariant4() {
               <img
                 src={member.photo}
                 alt={member.name}
-                className="w-full h-64 object-cover"
+                className="w-full h-145 object-cover"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4">
                 <h3 className="text-xl font-semibold text-white">{member.name}</h3>
