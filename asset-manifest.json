@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/bm-electro/static/css/main.f855e6bc.css",
-    "main.js": "/bm-electro/static/js/main.880bbec8.js",
+    "main.js": "/bm-electro/static/js/main.e64a68bf.js",
     "static/js/453.e1fb2a33.chunk.js": "/bm-electro/static/js/453.e1fb2a33.chunk.js",
     "index.html": "/bm-electro/index.html",
     "main.f855e6bc.css.map": "/bm-electro/static/css/main.f855e6bc.css.map",
-    "main.880bbec8.js.map": "/bm-electro/static/js/main.880bbec8.js.map",
+    "main.e64a68bf.js.map": "/bm-electro/static/js/main.e64a68bf.js.map",
     "453.e1fb2a33.chunk.js.map": "/bm-electro/static/js/453.e1fb2a33.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.f855e6bc.css",
-    "static/js/main.880bbec8.js"
+    "static/js/main.e64a68bf.js"
   ]
 }
